@@ -28,7 +28,7 @@
 
 // ******************************************************************************************* //
 
-// TODO: This function will use a 16-bit timer (Timer 2) to wait for approximately 0 to the 16000 us
+// TODO: This function will use a 16-bit timer (Timer 3) to wait for approximately 0 to the 16000 us
 // specfied by the input usDelay.
 //
 // Function Inputs:
@@ -36,16 +36,45 @@
 
 void DelayUs(unsigned int usDelay) {
 
-	// TODO: Use Timer 2 to delay for precisely (as precise as possible) usDelay
-	// microseconds provided by the input variable.
+    
+        // Set Timer 3's period value regsiter to value for 250ms. Please note
+	// T1CON's register settings below (internal Fosc/2 and 1:256 prescalar).
 	//
-	// Hint: Determine the configuration for the PR1 setting that provides for a
-	// one microsecond delay, and multiply this by the input variable.
-	// Be sure to user integer values only.
-/**********************************************/
+	//    Fosc     = XTFREQ * PLLMODE
+	//             = 7372800 * 4
+	//             = 29491200
+	//
+	//    Fosc/2   = 29491200 / 2
+	//             = 14745600
+	//
+	//    Timer 2 Freq = (Fosc/2) / Prescaler
+	//                 = 14745600 /8
+	//                 = 1843200
+	//
+	//    PR1 = 1 us / (1 / (T1 Freq))
+	//        = 1e-6/ (1 / 1843200)
+	//        = 1e-6 * 1843200
+	//        = 1.84320
 
+    PR3 = 1.8432*usDelay;
+
+        IFS0bits.T3IF = 0;
+        IEC0bits.T3IE = 1;
+        // Setup Timer 3 control register (T3CON) to:
+ 	//     TON           = 1     (start timer)
+	//     TCKPS1:TCKPS2 = 01    (set timer prescaler to 1:8)
+	//     TCS           = 0     (Fosc/2)
+    T3CON = 0x8010;
+
+
+    while(IFS0bits.T3IF == 0);
 
 /*****************************************************/
+}
+
+void _ISR _T3Interupt(){
+    IFS0bits.T3IF = 0;
+    T3CONbits.TON = 0;
 }
 
 // ******************************************************************************************* //
@@ -103,14 +132,43 @@ void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay) {
 void LCDInitialize(void) {
 
 	// Setup D, RS, and E to be outputs (0).
+    
+    LCD_D = 0; LCD_RS = 0; LCD_E = 0;
 
 	// Initilization sequence utilizes specific LCD commands before the general configuration
 	// commands can be utilized. The first few initilition commands cannot be done using the
 	// WriteLCD function. Additionally, the specific sequence and timing is very important.
 
-	// Enable 4-bit interface
+    DelayUs(150000);
 
-	// Function Set (specifies data width, lines, and font.
+	// Enable 4-bit interface
+    UM...
+    LCD_TRIS_E = 1;
+
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 1; DelayUs(4100);
+
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 1; DelayUs(4100);
+    
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 1; DelayUs(4100);
+        // Function Set (specifies data width, lines, and font.
+
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 1; DelayUs(4100);
 
 	// 4-bit mode initialization is complete. We can now configure the various LCD
 	// options to control how the LCD will function.
