@@ -1,3 +1,5 @@
+Jacob is silly
+
 This is just a rough design of the lab priorities. If you have a question contact Jacob.
 
 So were missing lab1p1.c file its not on D2L.
