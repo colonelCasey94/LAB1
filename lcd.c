@@ -37,7 +37,6 @@
 void DelayUs(unsigned int usDelay) {
 
     
-    TMR3 = 0;
         // Set Timer 3's period value regsiter to value for 250ms. Please note
 	// T1CON's register settings below (internal Fosc/2 and 1:256 prescalar).
 	//
@@ -49,19 +48,33 @@ void DelayUs(unsigned int usDelay) {
 	//             = 14745600
 	//
 	//    Timer 2 Freq = (Fosc/2) / Prescaler
-	//                 = 14745600 / 256
-	//                 = 57600
+	//                 = 14745600 /8
+	//                 = 1843200
 	//
 	//    PR1 = 1 us / (1 / (T1 Freq))
-	//        = 1e-6/ (1 / 57600)
-	//        = 1e-6 * 57600
-	//        = .0576
+	//        = 1e-6/ (1 / 1843200)
+	//        = 1e-6 * 1843200
+	//        = 1.84320
 
-    PR1 = .0576*usDelay;
+    PR3 = 1.8432*usDelay;
 
-    while(TMR3 < PR1);
+        IFS0bits.T3IF = 0;
+        IEC0bits.T3IE = 1;
+        // Setup Timer 3 control register (T3CON) to:
+ 	//     TON           = 1     (start timer)
+	//     TCKPS1:TCKPS2 = 01    (set timer prescaler to 1:8)
+	//     TCS           = 0     (Fosc/2)
+    T3CON = 0x8010;
+
+
+    while(IFS0bits.T3IF == 0);
 
 /*****************************************************/
+}
+
+void _ISR _T3Interupt(){
+    IFS0bits.T3IF = 0;
+    T3CONbits.TON = 0;
 }
 
 // ******************************************************************************************* //
