@@ -14,7 +14,7 @@ Jack(support)
 
 Software:
 Jacob (lead)
--function DelayUs(1)<x>
+-function DelayUs(1)
 -complete LCDinitialize() function in lcd.c(3)
 -complete LCDPrintChar() function in lcd.c(6)
 
