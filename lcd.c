@@ -139,38 +139,127 @@ void LCDInitialize(void) {
 	// commands can be utilized. The first few initilition commands cannot be done using the
 	// WriteLCD function. Additionally, the specific sequence and timing is very important.
 
-    DelayUs(150000);
-
+    int i = 0;
+    while (i<10){
+    DelayUs(16000);
+    i++;
+    }
 	// Enable 4-bit interface
-    UM...
     LCD_TRIS_E = 1;
 
     LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
     LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 1; DelayUs(4100);
+    LCD_TRIS_D4 = 1;DelayUs(4100)
+
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;
 
     LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
     LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 1; DelayUs(4100);
+    LCD_TRIS_D4 = 1;DelayUs(100);
+
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;
     
     LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
     LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 1; DelayUs(4100);
-        // Function Set (specifies data width, lines, and font.
+    LCD_TRIS_D4 = 1;
+
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;
 
     LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
     LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 1; DelayUs(4100);
+    LCD_TRIS_D4 = 0; DelayUs();
+  //Function set
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
 
-	// 4-bit mode initialization is complete. We can now configure the various LCD
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+
+  //Display set
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+    
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 1;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+    
+  //Display Clear
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+    
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 1;DelayUs(4100);
+    
+  //Entry Mode Set
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+    
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 1;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+
+  //Display control
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 1;
+    LCD_TRIS_D6 = 1;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+    
+  //end initialization
+    LCD_TRIS_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;DelayUs(4100);
+    // 4-bit mode initialization is complete. We can now configure the various LCD
 	// options to control how the LCD will function.
 
 	// TODO: Display On/Off Control
