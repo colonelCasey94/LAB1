@@ -201,7 +201,8 @@ void LCDInitialize(void) {
     LCD_TRIS_D5 = 1;
     LCD_TRIS_D4 = 0;DelayUs(4100);
 
-  //Display set
+  //Display control
+  //display off
     LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
@@ -228,6 +229,7 @@ void LCDInitialize(void) {
     LCD_TRIS_D4 = 1;DelayUs(4100);
     
   //Entry Mode Set
+  //increment display, no shift (ie cursor move)
     LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
@@ -241,6 +243,7 @@ void LCDInitialize(void) {
     LCD_TRIS_D4 = 0;DelayUs(4100);
 
   //Display control
+  //display on, cursor off, blink off
     LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
@@ -259,16 +262,6 @@ void LCDInitialize(void) {
     LCD_TRIS_D6 = 0;
     LCD_TRIS_D5 = 0;
     LCD_TRIS_D4 = 0;DelayUs(4100);
-    // 4-bit mode initialization is complete. We can now configure the various LCD
-	// options to control how the LCD will function.
-
-	// TODO: Display On/Off Control
-	// Turn Display (D) Off
-	// TODO: Clear Display
-	// TODO: Entry Mode Set
-	// Set Increment Display, No Shift (i.e. cursor move)
-	// TODO: Display On/Off Control
-	// Turn Display (D) On, Cursor (C) Off, and Blink(B) Off
 }
 
 // ******************************************************************************************* //
