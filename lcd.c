@@ -131,6 +131,17 @@ void LCDInitialize(void) {
 
 void LCDClear(void) {
 
+    LCD_RS = 0;
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 0;
+    DelayUs(100);
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D4 = 1;
+    DelayUs(100);
 	// TODO: Write the proper control instruction to clear the screen ensuring
 	// the proper delay is utilized.
 }
