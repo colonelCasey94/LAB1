@@ -117,6 +117,68 @@ void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay) {
 	// TODO: Using bit masking and shift operations, write most significant bits to correct
 	// bits of the LCD_D signal (i.e. #define used to map internal name to LATB)
 	// and enable the LCD for the correct command.
+    if(commandType == 1){ // LCD_WRITE_DATA
+        if((word & 0x80) == 0x80) LCD_TRIS_D7 = 1;  // fist 4 significant bits
+        else LCD_TRIS_D7 = 0;
+
+        if((word & 0x40) == 0x40) LCD_TRIS_D6 = 1;
+        else LCD_TRIS_D6 = 0;
+
+        if((word & 0x20) == 0x20) LCD_TRIS_D5 = 1;
+        else LCD_TRIS_D5 = 0;
+
+        if((word & 0x10) == 0x10) LCD_TRIS_D4 = 1;
+        else LCD_TRIS_D4 = 0;
+
+        EnableLCD(1, usDelay);
+
+        if((word & 0x08) == 0x08) LCD_TRIS_D7 = 1;  // 4 last bits
+        else LCD_TRIS_D7 = 0;
+
+        if((word & 0x04) == 0x04) LCD_TRIS_D6 = 1;
+        else LCD_TRIS_D6 = 0;
+
+        if((word & 0x02) == 0x02) LCD_TRIS_D5 = 1;
+        else LCD_TRIS_D5 = 0;
+
+        if((word & 0x01) == 0x01) LCD_TRIS_D4 = 1;
+        else LCD_TRIS_D4 = 0;
+
+        EnableLCD(1, usDelay);
+    }
+
+    if(commandType == 0){ // LCD_WRITE_CONTROLL
+        LCD_RS = 0;
+
+        if((word & 0x80) == 0x80) LCD_TRIS_D7 = 1;  // first 4 bits
+        else LCD_TRIS_D7 = 0;
+
+        if((word & 0x40) == 0x40) LCD_TRIS_D6 = 1;
+        else LCD_TRIS_D6 = 0;
+
+        if((word & 0x20) == 0x20) LCD_TRIS_D5 = 1;
+        else LCD_TRIS_D5 = 0;
+
+        if((word & 0x10) == 0x10) LCD_TRIS_D4 = 1;
+        else LCD_TRIS_D4 = 0;
+
+        EnableLCD(1, usDelay);
+
+        if((word & 0x08) == 0x08) LCD_TRIS_D7 = 1;  // last 4 bits
+        else LCD_TRIS_D7 = 0;
+
+        if((word & 0x04) == 0x04) LCD_TRIS_D6 = 1;
+        else LCD_TRIS_D6 = 0;
+
+        if((word & 0x02) == 0x02) LCD_TRIS_D5 = 1;
+        else LCD_TRIS_D5 = 0;
+
+        if((word & 0x01) == 0x01) LCD_TRIS_D4 = 1;
+        else LCD_TRIS_D4 = 0;
+
+        EnableLCD(1, usDelay);
+    }
+
 
 	// TODO: Using bit masking and shift operations, write least significant bits to correct
 	// bits of the LCD_D signal (i.e. #define used to map internal name to LATB)
@@ -271,6 +333,8 @@ void LCDInitialize(void) {
 
 void LCDClear(void) {
 
+    WriteLCD(0x01, 0, 40);
+    
 	// TODO: Write the proper control instruction to clear the screen ensuring
 	// the proper delay is utilized.
 }
