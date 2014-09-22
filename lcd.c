@@ -201,129 +201,51 @@ void LCDInitialize(void) {
 	// commands can be utilized. The first few initilition commands cannot be done using the
 	// WriteLCD function. Additionally, the specific sequence and timing is very important.
 
+    //Wait for powerup
     int i = 0;
     while (i<10){
     DelayUs(16000);
     i++;
     }
-	// Enable 4-bit interface
-    LCD_TRIS_E = 1;
 
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 1;DelayUs(4100)
+    // Enable 4-bit interface
 
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;
-
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 1;DelayUs(100);
-
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;
-    
-    LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
     LCD_TRIS_D5 = 1;
     LCD_TRIS_D4 = 1;
+    EnableLCD(0,40);
+    DelayUs(4100); // Break for startup functionsets
 
-    LCD_TRIS_RS = 0;
     LCD_TRIS_D7 = 0;
     LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 1;
+    EnableLCD(0,40);
+    DelayUs(100); // Break for functionsets
+
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 1;
+    LCD_TRIS_D4 = 1;
+    EnableLCD(0,40);
+
+    LCD_TRIS_D7 = 0;
+    LCD_TRIS_D6 = 0;
+    LCD_TRIS_D5 = 1;
     LCD_TRIS_D4 = 0;
+    EnableLCD(0,40);
 
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 0; DelayUs();
-  //Function set
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-
-  //Display control
-  //display off
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-    
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 1;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-    
-  //Display Clear
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-    
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 1;DelayUs(4100);
-    
-  //Entry Mode Set
-  //increment display, no shift (ie cursor move)
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-    
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 1;
-    LCD_TRIS_D5 = 1;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-
-  //Display control
-  //display on, cursor off, blink off
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 1;
-    LCD_TRIS_D6 = 1;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
-    
-  //end initialization
-    LCD_TRIS_RS = 0;
-    LCD_TRIS_D7 = 0;
-    LCD_TRIS_D6 = 0;
-    LCD_TRIS_D5 = 0;
-    LCD_TRIS_D4 = 0;DelayUs(4100);
+    //Functionset
+    WriteLCD(0x2C, 0, 40);
+    //Display off
+    WriteLCD(0x08, 0, 40);
+    //Clear Display
+    WriteLCD(0x01, 0, 40);
+    //Entry Mode Set
+    WriteLCD(0x06, 0, 40);
+    //Display on
+    WriteLCD(0x0C, 0, 40);
 }
 
 // ******************************************************************************************* //
