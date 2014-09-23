@@ -5,7 +5,7 @@
 
 #include "p24fj64ga002.h"
 #include <stdio.h>
-#include "lcd.h"
+//#include "lcd.h"
 
 // ******************************************************************************************* //
 // Configuration bits for CONFIG1 settings.
@@ -50,8 +50,17 @@ volatile unsigned char cnt;
 unsigned char command;
 // ******************************************************************************************* //
 
+/*****************************************************/
+
+
 int main(void)
 {
+
+        RPOR4bits.RP8R = 3;
+        U1BRG  = BRGVAL;
+        U1MODE = 0x8000;
+
+	
 	// printf by default is mapped to serial communication using UART1.
 	// NOTES:
 	//        1. You must specify a heap size for printf. This is required
@@ -62,15 +71,18 @@ int main(void)
 	//           c.) Entering the size of heap, e.g. 512, under Heap Size
 	//        2. printf function is advanced and using printf may require
 	//           significant code size (6KB-10KB).
-	printf("Lab 1: Debugging Statements\n\r");
+	printf("Lab 2: Debugging Statements\n\r");
 
 	// The following code will not work until you have implemented the
 	// the required LCD functions defined within lcd.c
 	LCDInitialize();
+        LCDClear();
+        printf("clear");
+/*******************************/
 
 	while(1)
 	{
-            
+         
 	}
 	return 0;
 }
@@ -93,6 +105,18 @@ void __attribute__((interrupt,auto_psv)) _T1Interrupt(void)
 {
 	// Clear Timer 1 interrupt flag to allow another Timer 1 interrupt to occur.
 	IFS0bits.T1IF = 0;
-}
 
+	// Updates cnt to wraparound from 9 to 0 for this demo.
+	cnt = (cnt<9)?(cnt+1):0;
+
+/*******************************/
+	//make the LCD blink;
+////	command ^= 0x4;
+////	WriteLCD(command, 0, 40);
+/*******************************/
+}
+//void _ISR _T1Interrupt(void)
+//{
+// IFS0bits.T1IF = 0;
+//}
 // ******************************************************************************************* //

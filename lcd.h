@@ -11,3 +11,4 @@ void LCDPrintString(const char* s);
 //for testing other LCD instructions
 void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay);
 void DelayUs(unsigned int usDelay);
+void EnableLCD(unsigned char commandType, unsigned usDelay);
