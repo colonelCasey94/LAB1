@@ -1,6 +1,7 @@
 // ******************************************************************************************* //
 
 #include "p24fj64ga002.h"
+#include<stdio.h>
 
 // ******************************************************************************************* //
 
@@ -28,7 +29,7 @@
 
 // ******************************************************************************************* //
 
-// TODO: This function will use a 16-bit timer (Timer 2) to wait for approximately 0 to the 16000 us
+// TODO: This function will use a 16-bit timer (Timer 3) to wait for approximately 0 to the 16000 us
 // specfied by the input usDelay.
 //
 // Function Inputs:
@@ -36,17 +37,40 @@
 
 void DelayUs(unsigned int usDelay) {
 
-	// TODO: Use Timer 2 to delay for precisely (as precise as possible) usDelay
-	// microseconds provided by the input variable.
-	//
-	// Hint: Determine the configuration for the PR1 setting that provides for a
-	// one microsecond delay, and multiply this by the input variable.
-	// Be sure to user integer values only.
-/**********************************************/
 
+        // Set Timer 3's period value regsiter to value for 250ms. Please note
+	// T1CON's register settings below (internal Fosc/2 and 1:256 prescalar).
+	//
+	//    Fosc     = XTFREQ * PLLMODE
+	//             = 7372800 * 4
+	//             = 29491200
+	//
+	//    Fosc/2   = 29491200 / 2
+	//             = 14745600
+	//
+	//    Timer 2 Freq = (Fosc/2) / Prescaler
+	//                 = 14745600 /8
+	//                 = 1843200
+	//
+	//    PR1 = 1 us / (1 / (T1 Freq))
+	//        = 1e-6/ (1 / 1843200)
+	//        = 1e-6 * 1843200
+	//        = 1.84320
+        TMR3 =0;
+        PR3 = 1.84320*usDelay;
+        // Setup Timer 3 control register (T3CON) to:
+        //     TON           = 1     (start timer)
+        //     TCKPS1:TCKPS2 = 01    (set timer prescaler to 1:8)
+        //     TCS           = 0     (Fosc/2)
+        T3CON = 0x8010;
+       // TMR3=0;
+
+        while(TMR3 < PR3);
+        //printf("delay");
 
 /*****************************************************/
 }
+
 
 // ******************************************************************************************* //
 
@@ -88,6 +112,7 @@ void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay) {
 	// TODO: Using bit masking and shift operations, write most significant bits to correct
 	// bits of the LCD_D signal (i.e. #define used to map internal name to LATB)
 	// and enable the LCD for the correct command.
+
         if((word & 0x80) == 0x80) LCD_TRIS_D7 = 1;  // fist 4 significant bits
         else LCD_TRIS_D7 = 0;
 
@@ -99,6 +124,8 @@ void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay) {
 
         if((word & 0x10) == 0x10) LCD_TRIS_D4 = 1;
         else LCD_TRIS_D4 = 0;
+
+//    LCD_D = word >> 4;
 
         EnableLCD(commandType, usDelay);
 
@@ -114,9 +141,10 @@ void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay) {
         if((word & 0x01) == 0x01) LCD_TRIS_D4 = 1;
         else LCD_TRIS_D4 = 0;
 
+//    LCD_D = word;
+
         EnableLCD(commandType, usDelay);
- 
-	// TODO: Using bit masking and shift operations, write least significant bits to correct
+  	// TODO: Using bit masking and shift operations, write least significant bits to correct
 	// bits of the LCD_D signal (i.e. #define used to map internal name to LATB)
 	// and enable the LCD for the correct command.
 }
@@ -130,25 +158,44 @@ void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay) {
 void LCDInitialize(void) {
 
 	// Setup D, RS, and E to be outputs (0).
+	LCD_TRIS_D7 = 0;	// D7
+	LCD_TRIS_D6 = 0;	// D6
+	LCD_TRIS_D5 = 0;	// D5
+	LCD_TRIS_D4 = 0;	// D4
+	LCD_TRIS_RS = 0;	// RS
+	LCD_TRIS_E  = 0;	// E
 
 	// Initilization sequence utilizes specific LCD commands before the general configuration
 	// commands can be utilized. The first few initilition commands cannot be done using the
 	// WriteLCD function. Additionally, the specific sequence and timing is very important.
+	LCD_D = (LCD_D & 0x0FFF) | 0x0000;
+	LCD_RS = 0;
+	LCD_E = 0;
+	DelayUs(15000);
+
+	LCD_D = (LCD_D & 0x0FFF) | 0x3000;
+	EnableLCD(LCD_WRITE_CONTROL, 4100);
+
+	LCD_D = (LCD_D & 0x0FFF) | 0x3000;
+	EnableLCD(LCD_WRITE_CONTROL, 100);
 
 	// Enable 4-bit interface
+	WriteLCD(0x32, LCD_WRITE_CONTROL, 100);
 
 	// Function Set (specifies data width, lines, and font.
+	WriteLCD(0x28, LCD_WRITE_CONTROL, 40);
 
-	// 4-bit mode initialization is complete. We can now configure the various LCD
-	// options to control how the LCD will function.
 
-	// TODO: Display On/Off Control
-	// Turn Display (D) Off
-	// TODO: Clear Display
-	// TODO: Entry Mode Set
-	// Set Increment Display, No Shift (i.e. cursor move)
-	// TODO: Display On/Off Control
-	// Turn Display (D) On, Cursor (C) Off, and Blink(B) Off
+    //Functionset
+    WriteLCD(0x28, LCD_WRITE_CONTROL, 40);
+    //Display off
+    WriteLCD(0x08, LCD_WRITE_CONTROL, 40);
+    //Clear Display
+    WriteLCD(0x01, LCD_WRITE_CONTROL, 1500);
+    //Entry Mode Set
+    WriteLCD(0x06, LCD_WRITE_CONTROL, 40);
+    //Display on
+    WriteLCD(0x0F, LCD_WRITE_CONTROL, 40);
 }
 
 // ******************************************************************************************* //
@@ -159,9 +206,9 @@ void LCDInitialize(void) {
 void LCDClear(void) {
 
     LCD_RS = 0;
-    
-    WriteLCD(0x01, 0, 40);
-    
+
+    WriteLCD(0x01, 0, 1500);
+
 	// TODO: Write the proper control instruction to clear the screen ensuring
 	// the proper delay is utilized.
 }
