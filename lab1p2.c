@@ -5,7 +5,7 @@
 
 #include "p24fj64ga002.h"
 #include <stdio.h>
-//#include "lcd.h"
+#include "lcd.h"
 
 // ******************************************************************************************* //
 // Configuration bits for CONFIG1 settings.
@@ -60,7 +60,7 @@ int main(void)
         U1BRG  = BRGVAL;
         U1MODE = 0x8000;
 
-	
+
 	// printf by default is mapped to serial communication using UART1.
 	// NOTES:
 	//        1. You must specify a heap size for printf. This is required
@@ -76,13 +76,15 @@ int main(void)
 	// The following code will not work until you have implemented the
 	// the required LCD functions defined within lcd.c
 	LCDInitialize();
-        LCDClear();
-        printf("clear");
+//        LCDClear();
+//        printf("clear");
 /*******************************/
+//        TRISBbits.TRISB15 = 0;
 
+        //WriteLCD(0x0F, 0, 40);
 	while(1)
 	{
-         
+//            WriteLCD(0x41, 1, 46);
 	}
 	return 0;
 }
