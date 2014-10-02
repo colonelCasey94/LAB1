@@ -53,7 +53,8 @@ volatile int m; // minutes
 volatile int s; // seconds
 volatile int f; // 1/100th of a second
 
-enum State {RUN, STOP, RESET} state;
+enum State {RUN, STOP} state;
+volatile int flag;
 // ******************************************************************************************* //
 
 /*****************************************************/
@@ -94,10 +95,45 @@ int main(void)
         //TCS = 0 (Fosc/2)
 
         T1CON = 0x0010;
+        IFS0bits.T1IF = 0;
+
+	IEC0bits.T1IE = 1;
+        
+        //set LED to output and to start with RED LED on
+        TRISBbits.TRISB2 = 0;//GREEN
+        TRISBbits.TRISB3 = 0;//RED
+        
+        LATBbits.LATB2 = 1;
+        LATBbits.LATB3 = 0;
+        
+        //set button input to digital IO
+        
+        AD1PCFGbits.PCFG4 = 1;
+        AD1PCFGbits.PCFG5 = 1;
+
+        // set button input
+        TRISBbits.TRISB4 = 1;
+        TRISBbits.TRISB5 = 1;
+
+        //set up change of state flag for input
+        CNEN1bits.CN1IE = 1;
+        CNEN2bits.CN27IE = 1;
+
+
+        CNPU2bits.CN27PUE = 1;
+        CNPU1bits.CN1PUE = 1;
+        //clear flag interupt
+        IFS1bits.CNIF = 0;
+
+        //enable change notification flag interupt
+        IEC1bits.CNIE = 1;
+
 
         m = 0; //minutes
         s = 0; //seconds
         f = 0; //1/100th seconds
+
+        flag = 0;
 
 	// The following code will not work until you have implemented the
 	// the required LCD functions defined within lcd.c
@@ -107,51 +143,69 @@ int main(void)
 /*******************************/
 //        TRISBbits.TRISB15 = 0;
 
-        LCDPrintString("Hello");
-        DelayUs(1600);
         state = STOP;
+        LCDPrintString("Hello");
+        LCDMoveCursor(1,0);
+        LCDPrintString("00:00:00");
 
         //WriteLCD(0x0F, 0, 40);
         int i = 0;
         int num = 0;
 	while(1)
 	{
-            if(state==STOP){
-                LCDClear();
-                LCDMoveCursor(0,2);
-                LCDPrintString("STOP");
-                LCDMoveCursor(1,0);
-                LCDPrintString("00:00:00");
+            printf("%d  %d  %d\n", f, s, m);
+            
+            if(flag == 1){
+                flag = 0;
+                if(state == RUN){
+                    T1CONbits.TON = 1;
+                    TMR1 = 0;
+                    IFS0bits.T1IF = 0;
 
-            }
-            else if (state == RUN){
+                    LCDMoveCursor(0,0);
+                    LCDPrintString("Running");
 
-            }
-            else if (state == RESET){
+                    LATBbits.LATB2 = 0;
+                    LATBbits.LATB3 = 1;
+                }
+                else if (state == STOP) {
+                    T1CONbits.TON = 0;
+                    IFS0bits.T1IF = 0;
 
+                    LCDMoveCursor(0,0);
+                    LCDPrintString("Stopped");
+
+                    LATBbits.LATB2 = 1;
+                    LATBbits.LATB3 = 0;
+                }
             }
-            i = 0;
-            LCDMoveCursor(1,0);
-            while (i < 6) {
+            i = 1;
+            while (i <= 6) {
                 switch (i){
                     case 1:
-                        num = (m\10)%10;
+                        num = (m/10)%10;
+                        LCDMoveCursor(1,0);
                         break;
                     case 2:
                         num = m%10;
+                       // LCDMoveCursor(1,1);
                         break;
                     case 3:
+                       // LCDMoveCursor(1,2);
                         LCDPrintChar(':');
                         num = (s/10)%10;
                         break;
                     case 4:
+                       // LCDMoveCursor(1,4);
                         num = s%10;
                         break;
                     case 5:
+                       // LCDMoveCursor(1,5);
                         LCDPrintChar(':');
                         num = (f/10)%10;
                         break;
                     case 6:
+                        //LCDMoveCursor(1,6);
                         num = f%10;
                         break;
                 }
@@ -190,8 +244,6 @@ int main(void)
                 }
                 i++;
             }
-            
-//            WriteLCD(0x41, 1, 46);
 	}
 	return 0;
 }
@@ -216,29 +268,58 @@ void __attribute__((interrupt,auto_psv)) _T1Interrupt(void)
 	IFS0bits.T1IF = 0;
 
 	// Updates cnt to wraparound from 9 to 0 for this demo.
-	cnt = (cnt<9)?(cnt+1):0;
+	// cnt = (cnt<9)?(cnt+1):0;
 
-        if (f <= 99) {
-            f++;
-        }
-        else if (s <= 59){
+//        if (f <= 99) {
+//            f++;
+//        }
+//        else if (s <= 59){
+//            f = 0;
+//            s++;
+//        }
+//        else {
+//            f = 0;
+//            s = 0;
+//            m++;
+//        }
+
+        f++;
+
+        if(f == 100){
             f = 0;
             s++;
         }
-        else {
-            f = 0;
+        if(s == 60){
             s = 0;
             m++;
         }
 
-/*******************************/
-	//make the LCD blink;
-////	command ^= 0x4;
-////	WriteLCD(command, 0, 40);
-/*******************************/
 }
-//void _ISR _T1Interrupt(void)
-//{
-// IFS0bits.T1IF = 0;
-//}
+
+
+
+void __attribute__((interrupt,auto_psv)) _CNInterrupt(void){
+
+    //clear flag
+    IFS1bits.CNIF = 0;
+
+    if(PORTBbits.RB5 == 0){
+        if (state == STOP){
+            state = RUN;
+            flag = 1;
+            
+        }
+        else if (state == RUN) {
+            state = STOP;
+            flag = 1;
+        }
+    }
+    if(PORTBbits.RB4 == 0){
+      if (state == STOP){
+         f = 0;
+          s = 0;
+          m = 0;
+      }
+    }
+}
 // ******************************************************************************************* //
