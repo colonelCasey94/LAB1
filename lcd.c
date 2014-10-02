@@ -57,21 +57,17 @@ void DelayUs(unsigned int usDelay) {
 	//        = 1e-6 * 1843200
 	//        = 1.84320
         TMR2 =0;
-//        PR3 = 1.84320*usDelay;
         PR2 = 2*usDelay;
         IFS0bits.T2IF = 0;
-//        IEC0bits.T3IE = 1;
         // Setup Timer 3 control register (T3CON) to:
         //     TON           = 1     (start timer)
         //     TCKPS1:TCKPS2 = 01    (set timer prescaler to 1:8)
         //     TCS           = 0     (Fosc/2)
         T2CON = 0x8010;
-       // TMR3=0;
 
         while(IFS0bits.T2IF == 0);
         IFS0bits.T2IF = 0;
         T2CON = 0x0000;
-        //printf("delay");
 
 /*****************************************************/
 }
@@ -118,37 +114,11 @@ void WriteLCD(unsigned char word, unsigned commandType, unsigned usDelay) {
 	// bits of the LCD_D signal (i.e. #define used to map internal name to LATB)
 	// and enable the LCD for the correct command.
 
-//        if((word & 0x80) == 0x80) LCD_TRIS_D7 = 1;  // fist 4 significant bits
-//        else LCD_TRIS_D7 = 0;
-//
-//        if((word & 0x40) == 0x40) LCD_TRIS_D6 = 1;
-//        else LCD_TRIS_D6 = 0;
-//
-//        if((word & 0x20) == 0x20) LCD_TRIS_D5 = 1;
-//        else LCD_TRIS_D5 = 0;
-//
-//        if((word & 0x10) == 0x10) LCD_TRIS_D4 = 1;
-//        else LCD_TRIS_D4 = 0;
-
-//    LCD_D = word >> 4;
 
     LCD_D = (LCD_D & 0x0FFF) | ((word >> 4) << 12);
 
         EnableLCD(commandType, usDelay);
 
-//        if((word & 0x08) == 0x08) LCD_TRIS_D7 = 1;  // 4 last bits
-//        else LCD_TRIS_D7 = 0;
-//
-//        if((word & 0x04) == 0x04) LCD_TRIS_D6 = 1;
-//        else LCD_TRIS_D6 = 0;
-//
-//        if((word & 0x02) == 0x02) LCD_TRIS_D5 = 1;
-//        else LCD_TRIS_D5 = 0;
-//
-//        if((word & 0x01) == 0x01) LCD_TRIS_D4 = 1;
-//        else LCD_TRIS_D4 = 0;
-
-//    LCD_D = word;
         LCD_D = (LCD_D & 0x0FFF) | ((word & 0x0F) << 12);
 
         EnableLCD(commandType, usDelay);
@@ -193,9 +163,6 @@ void LCDInitialize(void) {
 	// Function Set (specifies data width, lines, and font.
 	WriteLCD(0x28, LCD_WRITE_CONTROL, 40);
 
-
-    //Functionset
-//    WriteLCD(0x28, LCD_WRITE_CONTROL, 40);
     //Display off
     WriteLCD(0x08, LCD_WRITE_CONTROL, 40);
         //Clear Display
@@ -204,10 +171,6 @@ void LCDInitialize(void) {
     WriteLCD(0x06, LCD_WRITE_CONTROL, 40);
     //Display on
     WriteLCD(0x0C, LCD_WRITE_CONTROL, 40);
-//    //Clear Display
-//    WriteLCD(0x01, LCD_WRITE_CONTROL, 1500);
-    // return home
-//    WriteLCD(0x02, LCD_WRITE_CONTROL, 1500);
 }
 
 // ******************************************************************************************* //
@@ -243,11 +206,6 @@ void LCDMoveCursor(unsigned char row, unsigned char column) {
     position = position|0x80;
     WriteLCD(position,LCD_WRITE_CONTROL,40);
 
-//    if(row = 1)
-//        row = 4;
-//    int position = row+column;
-//
-//    WriteLCD((position & 0x8), 0, 40);
 
 }
 

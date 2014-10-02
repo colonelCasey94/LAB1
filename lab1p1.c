@@ -66,6 +66,8 @@ int main(void)
 	// TODO: Clear Timer 1 value and reset interrupt flag
     TMR1 = 0;
     IFS0bits.T1IF = 0;
+
+IEC0bits.T1IE = 1;
 	// TODO: Set Timer 1's period value register to value for 5 ms.
         //    14745600/256 = 57600
         //    57600*.005 = 288
